@@ -44,11 +44,7 @@
 <script>
   import { Blur, XImg, XButton, Flexbox, FlexboxItem } from "vux";
   import { DEFAULT_IMG } from "@/config/def";
-  import {
-    mapMutations,
-    mapState,
-    mapGetters
-  } from 'vuex'
+  import { mapMutations, mapState, mapGetters } from 'vuex'
   export default {
     name: "play",
     data() {

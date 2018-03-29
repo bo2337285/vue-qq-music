@@ -38,6 +38,7 @@
 <script>
   import { Blur, Flexbox, FlexboxItem } from "vux";
   import { DEFAULT_IMG } from "@/config/def";
+  import { mapMutations, mapState, mapGetters } from 'vuex'
   export default {
     name: "Cd",
     data() {
@@ -49,41 +50,26 @@
         }
       };
     },
-    created() {
-      this.$store
-        .dispatch("getCdList", this.$route.params.id)
-        .then(response => {
-            let _data = response.data;
-            var curr_cd = {};
-            if (_data.cdlist.length > 0) {
-              curr_cd = _data.cdlist[0]
-            }
-            this.cd = curr_cd
-            // console.log(_data);
-          },
-          responce => {
-            this.$vux.toast.show({
-              type: "text",
-              position: "top",
-              text: "获取数据失败"
-            });
-          })
+    created: async function() {
+      try {
+        this.$store.commit("loadingCtrl",true);
+        let res = await this.$store.dispatch("getCdList", this.$route.params.id);
+        let _data = res.data;
+        if (_data.cdlist.length > 0) {
+          this.cd = _data.cdlist[0]
+        }
+      } catch (error) {
+        this.$store.commit("notify",{ text: "获取数据失败" });
+      }
+      this.$store.commit("loadingCtrl",false);
     },
     methods: {
       backToHome(){
         this.$router.push('/');
-      }
+      },
+      ...mapMutations([ 'loadingCtrl' ])
     },
-    components: {
-      Blur,
-      Flexbox,
-      FlexboxItem
-    },
-    filters: {
-      listenCount: num => {
-        return Math.round(num / 1000) / 10 + '万'
-      }
-    }
+    components: { Blur, Flexbox, FlexboxItem }
   };
 
 </script>

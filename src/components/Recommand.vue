@@ -44,102 +44,45 @@
 </template>
 
 <script>
-import {
-  Flexbox,
-  FlexboxItem,
-  Card,
-  XImg,
-  Swiper,
-  SwiperItem,
-  Group,
-  CellBox
-} from "vux";
+import { Flexbox, FlexboxItem, Card, XImg, Swiper, SwiperItem, Group, CellBox } from "vux";
+import { mapMutations, mapState, mapGetters } from 'vuex'
 export default {
   name: "Recommand",
   data() {
     return {
-      loading: false,
       radioList: [],
       slider: [],
       songList: [],
       msg: "Recommand"
     };
   },
-  created() {
-    this.loading = true;
-    this.$store
-      .dispatch("getRecommands")
-      .then(
-        response => {
-          let _data = response.data.data;
-          this.radioList = _data.radioList;
-          this.slider = _data.slider;
-          this.songList = _data.songList;
-        },
-        responce => {
-          this.$vux.toast.show({
-            type: "text",
-            position: "top",
-            text: "获取数据失败"
-          });
-        }
-      )
-      .then(responce => {
-        this.loading = false;
-      });
+  created: async function() {
+    this.$store.commit("loadingCtrl",true);
+    let res = await this.$store.dispatch("getRecommands");
+    let _data = res.data.data;
+    this.radioList = _data.radioList;
+    this.slider = _data.slider;
+    this.songList = _data.songList;
+    this.$store.commit("loadingCtrl",false);
   },
   methods: {
-    getRadioList(item) {
-      this.loading = true;
-      this.$store
-        .dispatch("getRadioList", item.radioid)
-        .then(
-          response => {
-            this.$vux.toast.show({
-              type: "text",
-              position: "top",
-              text: "获取数据成功"
-            });
-            let _data = response.data;
-            // console.log(_data);
-          },
-          responce => {
-            this.$vux.toast.show({
-              type: "text",
-              position: "top",
-              text: "获取数据失败"
-            });
-          }
-        )
-        .then(responce => {
-          this.loading = false;
-        });
-    },
-    getAlbum(item){
-      this.$router.push({name:'cd',params:{id:item.id}})
-    }
-  },
-  watch: {
-    loading(val) {
-      if (val) {
-        this.$vux.loading.show({
-          text: "正在更新数据"
-        });
-      } else {
-        this.$vux.loading.hide();
+    getRadioList: async function(item) {
+      try {
+        this.$store.commit("loadingCtrl",true);
+        let res = await this.$store.dispatch("getRadioList", item.radioid);
+        console.log(res.data);
+        this.$store.commit("notify",{ text: "获取数据成功" });
+      } catch (error) {
+        this.$store.commit("notify",{ text: "获取数据失败" });
       }
-    }
+      this.$store.commit("loadingCtrl",false);
+    },
+    getAlbum(item) {
+      this.$router.push({ name: "cd", params: { id: item.id } });
+    },
+    ...mapMutations([ 'loadingCtrl','notify' ])
   },
-  components: {
-    Flexbox,
-    FlexboxItem,
-    Card,
-    XImg,
-    Swiper,
-    SwiperItem,
-    Group,
-    CellBox
-  }
+  components: { Flexbox, FlexboxItem, Card, XImg, Swiper, SwiperItem, Group, CellBox }
 };
 </script>
 

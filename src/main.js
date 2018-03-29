@@ -5,6 +5,12 @@ import store from './store'
 import App from './App'
 import router from './router'
 import { ToastPlugin, LoadingPlugin } from 'vux'
+import customFilter from '@/filters/index'
+
+Object.keys(customFilter).forEach(key => {
+  Vue.filter(key, customFilter[key])
+})
+
 Vue.use(ToastPlugin)
 Vue.use(LoadingPlugin)
 

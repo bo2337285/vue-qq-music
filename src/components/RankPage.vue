@@ -23,15 +23,8 @@
 </template>
 
 <script>
-import {
-  Flexbox,
-  FlexboxItem,
-  XImg,
-  Group,
-  Cell,
-  CellFormPreview,
-  CellBox
-} from "vux";
+import { Flexbox, FlexboxItem, XImg, Group, Cell, CellFormPreview, CellBox } from "vux";
+import { mapMutations, mapState, mapGetters } from "vuex";
 export default {
   name: "RankPage",
   data() {
@@ -40,57 +33,21 @@ export default {
       topList: []
     };
   },
-  created() {
-    this.loading = true;
-    this.$store
-      .dispatch("getRankList")
-      .then(
-        response => {
-          // this.$vux.toast.show({
-          //   type: "text",
-          //   position: "top",
-          //   text: "获取数据成功"
-          // });
-          let _data = response.data.data;
-          this.topList = _data.topList;
-        },
-        responce => {
-          this.$vux.toast.show({
-            type: "text",
-            position: "top",
-            text: "获取数据失败"
-          });
-        }
-      )
-      .then(responce => {
-        this.loading = false;
-      });
-  },
-  watch: {
-    loading(val) {
-      if (val) {
-        this.$vux.loading.show({
-          text: "正在更新数据"
-        });
-      } else {
-        this.$vux.loading.hide();
-      }
+  created: async function() {
+    try {
+      this.$store.commit("loadingCtrl", true);
+      let res = await this.$store.dispatch("getRankList");
+      let _data = res.data.data;
+      this.topList = _data.topList;
+    } catch (error) {
+      this.$store.commit("notify", { text: "获取数据失败" });
     }
+    this.$store.commit("loadingCtrl", false);
   },
-  components: {
-    Flexbox,
-    FlexboxItem,
-    XImg,
-    Group,
-    Cell,
-    CellFormPreview,
-    CellBox
+  methods: {
+    ...mapMutations(["loadingCtrl", "notify"])
   },
-  filters: {
-      listenCount: num=> {
-        return Math.round(num / 1000) / 10 + '万'
-      }
-    }
+  components: { Flexbox, FlexboxItem, XImg, Group, Cell, CellFormPreview, CellBox }
 };
 </script>
 <style>
