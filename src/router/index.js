@@ -15,8 +15,7 @@ export default new Router({
       path: '/',
       name: 'MainPage',
       components: {
-        main:MainPage,
-        default: Recommand
+        main:MainPage
       },
       children: [
         {
@@ -50,22 +49,6 @@ export default new Router({
         main: Album
       }
     },
-    // {
-    //   path: '/recommand',
-    //   name: 'recommand',
-    //   components: {
-    //     main: MainPage,
-    //     tab: Recommand
-    //   }
-    // },
-    // {
-    //   path: '/rank',
-    //   name: 'rank',
-    //   components: {
-    //     main: MainPage,
-    //     tab: RankPage
-    //   }
-    // },
     {
       path: '/cd/:id',
       name: 'cd',

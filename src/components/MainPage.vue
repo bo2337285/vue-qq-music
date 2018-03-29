@@ -13,11 +13,9 @@
         </router-link>
       </tab-item>
     </tab>
-    <transition>
       <keep-alive>
         <router-view/>
       </keep-alive>
-    </transition>
   </div>
 </template>
 
@@ -87,9 +85,9 @@ export default {
       });
     }
   },
-  created() {
+  created () {
     // this.$refs.push(this.tabs_selected)
-    console.log(this.$route.name);
+    // console.log(this.$route.name);
     if (this.tabs.length > 0) {
       let _name = this.$route.name;
       let _array = this.tabs.filter(item => item.name == _name);

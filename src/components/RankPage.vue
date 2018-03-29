@@ -46,11 +46,11 @@ export default {
       .dispatch("getRankList")
       .then(
         response => {
-          this.$vux.toast.show({
-            type: "text",
-            position: "top",
-            text: "获取数据成功"
-          });
+          // this.$vux.toast.show({
+          //   type: "text",
+          //   position: "top",
+          //   text: "获取数据成功"
+          // });
           let _data = response.data.data;
           this.topList = _data.topList;
         },

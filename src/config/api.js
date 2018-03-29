@@ -20,6 +20,23 @@ export default {
     },
     jsonp: 'jsonpCallback'
   },
+  radio: {
+    url: 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_radiosonglist.fcg',
+    params: (id) => {
+      return {
+        labelid: id,
+        format: "jsonp",
+        g_tk: 5381,
+        inCharset: "utf-8",
+        needNewCode: 1,
+        notice: 0,
+        outCharset: "utf-8",
+        platform: "h5",
+        uin: 0
+      }
+    },
+    jsonp: 'jsonpCallback'
+  },
   rank_list: {
     url: 'https://c.y.qq.com/v8/fcg-bin/fcg_myqq_toplist.fcg',
     params: () => {
@@ -134,54 +151,63 @@ export default {
     url: 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric.fcg',
     params: (id) => {
       return {
-        nobase64:1,
-        musicid:id,
-        songtype:0
+        nobase64: 1,
+        musicid: id,
+        songtype: 0
       }
     },
-    jsonp:'callback'
+    jsonp: 'callback'
   },
-  cd:{
-    url:'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg',
-    params:(id)=>{
+  cd: {
+    url: 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg',
+    params: (id) => {
       return {
-        g_tk:5381,
-        uin:0,
-        format:'jsonp',
-        inCharset:'utf-8',
-        outCharset:'utf-8',
-        notice:0,
-        platform:'h5',
-        needNewCode:1,
-        new_format:1,
-        pic:500,
-        disstid:id,
-        type:1,
-        json:1,
-        utf8:1,
-        onlysong:0,
-        nosign:1,
-        _:new Date().getTime()
+        g_tk: '5381',
+        uin: 0,
+        format: 'json',
+        inCharset: 'utf-8',
+        outCharset: 'utf-8',
+        notice: 0,
+        platform: 'h5',
+        needNewCode: 1,
+        new_format: 1,
+        pic: 500,
+        disstid: id,
+        type: 1,
+        json: 1,
+        utf8: 1,
+        onlysong: 0,
+        picmid: 1,
+        nosign: 1,
+        song_begin: 0,
+        song_num: 15,
+        _: new Date().getTime()
+      }
+    },
+    headers: (id) => {
+      return {
+        'referer': 'https://y.qq.com/w/taoge.html?ADTAG=myqq&from=myqq&channel=10007100&id='+id,
+        'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1 ',
       }
     },
     jsonp: 'jsonpCallback'
   },
-  first_page_data:{
-    url:"https://c.y.qq.com/v8/fcg-bin/fcg_first_yqq.fcg",
-    params(){
-      return{
-        format:'jsonp',
-        tpl:'v12',
-        page:'other',
-        rnd:0,
-        g_tk:new Date().getTime(),
-        loginUin:0,
-        hostUin:0,
-        inCharset:'utf8',
-        outCharset:'GB2312',
-        notice:0,
-        platform:'yqq',
-        needNewCode:0
+  first_page_data: {
+    url: "https://c.y.qq.com/v8/fcg-bin/fcg_first_yqq.fcg",
+    params() {
+      return {
+        format: 'jsonp',
+        tpl: 'v12',
+        page: 'other',
+        rnd: 0,
+        g_tk: new Date().getTime(),
+        loginUin: 0,
+        hostUin: 0,
+        inCharset: 'utf8',
+        outCharset: 'GB2312',
+        notice: 0,
+        platform: 'yqq',
+        needNewCode: 0
       }
     },
     jsonp: 'jsonpCallback'

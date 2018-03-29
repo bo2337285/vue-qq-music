@@ -11,12 +11,12 @@
     <h3 class="group-title">电台</h3>
     <flexbox wrap="wrap">
       <flexbox-item v-for="(item,index) in radioList" :key="index">
-        <card>
-          <div class="card-header" slot="header">
+        <card >
+          <div @click="getRadioList(item)" class="card-header" slot="header">
             <x-img class="card-img" :src="item.picUrl" />
             <div class="icon-play"></div>
           </div>
-          <div class="card-content" slot="content">
+          <div @click="getRadioList(item)" class="card-content" slot="content">
             <h3 class="card-title">{{item.Ftitle}}</h3>
             <p class="card-author"></p>
           </div>
@@ -27,16 +27,16 @@
     <h3 class="group-title">热门歌单</h3>
     <div class="hots-grid">
       <div class="hots-grid-item" v-for="(item,index) in songList" :key="index">
-        <card @click="onHotsClick(item)">
-          <div class="card-header" slot="header">
-            <x-img class="card-img" :src="item.picUrl" />
-            <div class="icon-play"></div>
-          </div>
-          <div class="card-content" slot="content">
-            <h3 class="card-title">{{item.songListDesc}}</h3>
-            <p class="card-author">{{item.songListAuthor}}</p>
-          </div>
-        </card>
+          <card >
+            <div @click="getAlbum(item)" class="card-header" slot="header">
+              <x-img class="card-img" :src="item.picUrl" />
+              <div class="icon-play"></div>
+            </div>
+            <div @click="getAlbum(item)" class="card-content" slot="content">
+              <h3 class="card-title">{{item.songListDesc}}</h3>
+              <p class="card-author">{{item.songListAuthor}}</p>
+            </div>
+          </card>
       </div>
     </div>
 
@@ -71,11 +71,6 @@ export default {
       .dispatch("getRecommands")
       .then(
         response => {
-          this.$vux.toast.show({
-            type: "text",
-            position: "top",
-            text: "获取数据成功"
-          });
           let _data = response.data.data;
           this.radioList = _data.radioList;
           this.slider = _data.slider;
@@ -94,7 +89,35 @@ export default {
       });
   },
   methods: {
-    onHotsClick(item) {}
+    getRadioList(item) {
+      this.loading = true;
+      this.$store
+        .dispatch("getRadioList", item.radioid)
+        .then(
+          response => {
+            this.$vux.toast.show({
+              type: "text",
+              position: "top",
+              text: "获取数据成功"
+            });
+            let _data = response.data;
+            // console.log(_data);
+          },
+          responce => {
+            this.$vux.toast.show({
+              type: "text",
+              position: "top",
+              text: "获取数据失败"
+            });
+          }
+        )
+        .then(responce => {
+          this.loading = false;
+        });
+    },
+    getAlbum(item){
+      this.$router.push({name:'cd',params:{id:item.id}})
+    }
   },
   watch: {
     loading(val) {

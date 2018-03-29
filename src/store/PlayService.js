@@ -3,12 +3,14 @@ import * as def from '../config/def'
 export default {
   state: {
     playing: false,
+    play_full: false,
     currentTime: 0,
     duration: 0,
     playMode: def.SEQUENTIAL,
     index: 0,
     song: {
-      name: def.DEFAULT_SONG_NAME
+      name: def.DEFAULT_SONG_NAME,
+      dataUrl: def.DEFAULT_SONG_DATAURL
     },
     playList: []
   },
@@ -59,6 +61,12 @@ export default {
     },
     pause (state) {
       state.playing = false
+    },
+    playFullEnable (state) {
+      state.play_full = true
+    },
+    playFullDisable (state) {
+      state.play_full = false
     },
     playFront (state) {
       state.index = (state.index - 1 + state.playList.length) % state.playList.length
