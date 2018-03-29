@@ -2,6 +2,10 @@
 
 > 用 vue2 + vux 实现一个带播放器的qq音乐，有参考
 
+# 关于qq音乐api
+
+> 由于qq音乐的api需要验证referer，故需要起一个server来中转，server目录内有个简单的中转服务器，需自行手动启动，默认监听3000端口，调用中转的地址在.\src\config\def.js内配置。
+
 ## Build Setup
 
 ``` bash
@@ -27,4 +31,3 @@ npm run e2e
 npm test
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
