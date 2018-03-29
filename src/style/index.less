@@ -1,32 +1,62 @@
+@body-bg : #f4f4f4;
+@font-color : #2c3e50;
+@link-color : #9BC5F2;
+
 #app {
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    /* text-align: center; */
-    color: #2c3e50;
-    font: 12px/1.5 "hiragino sans gb", arial;
-  }
-  body,div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, textarea, p, blockquote, th, td {
-    margin: 0;
-    padding: 0;
-  }
-  body {
-    background: #f4f4f4;
-  }
-  .container{
-    padding:0 8px;
-  }
-  .icon-play {
-    background-image: url("../assets/list_sprite.png");
-    background-repeat: no-repeat;
-    background-size: 24px 60px;
-    height: 24px;
-    bottom: 5px;
-    right: 5px;
-    width: 24px;
-    background-position: 0 0;
-    position: absolute;
-  }
-  .vux-x-img, .b-lazy{
-    vertical-align: middle;/* 处理图片多出底部空白的问题 */
-  }
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* text-align: center; */
+  color: @font-color;
+  font: 12px/1.5 "hiragino sans gb", arial;
+}
+
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, textarea, p, blockquote, th, td {
+  margin: 0;
+  padding: 0;
+}
+
+h1,
+h2 {
+  font-weight: normal;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  display: inline-block;
+  margin: 0 10px;
+}
+
+body {
+  background: @body-bg;
+}
+
+a {
+  color: @link-color;
+}
+
+.container {
+  padding: 0 8px;
+}
+
+.icon-play {
+  background-image: url("../assets/list_sprite.png");
+  background-repeat: no-repeat;
+  background-size: 24px 60px;
+  height: 24px;
+  bottom: 5px;
+  right: 5px;
+  width: 24px;
+  background-position: 0 0;
+  position: absolute;
+}
+
+.vux-x-img,
+.b-lazy {
+  vertical-align: middle;
+  /* 处理图片多出底部空白的问题 */
+}

@@ -8,9 +8,7 @@
     </search>
     <tab>
       <tab-item v-for="item in tabs" :key="item.name" :selected="item.name === tabs_selected" @on-item-click="onTabItemClick(item.name)">
-        <router-link :to="{name:item.name}">
           {{item.title}}
-        </router-link>
       </tab-item>
     </tab>
       <keep-alive>
@@ -118,23 +116,3 @@ function getSearchResult(val) {
   return rs;
 }
 </script>
-<style scoped>
-h1,
-h2 {
-  font-weight: normal;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-
-a {
-  color: #42b983;
-}
-</style>
