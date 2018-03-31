@@ -1,66 +1,95 @@
 <template>
   <div>
+    <!-- play-full -->
     <transition name="play-slide">
       <div v-show="play_full" class="play-full">
-        <flexbox orient="vertical">
-          <flexbox-item>
-            <blur :blur-amount="40" :url="curr_cover">
-              <p class="center">
-                <img :src="curr_cover" />
-              </p>
-            </blur>
-            <div class="play-page-hide-btn" @touchend.prevent.stop="playFullCtrl" @click="playFullCtrl">
-              <img src="../assets/icon-arrows.png" alt="">
+        <!-- <blur :blur-amount="40" class="play-bg-blur" :height="bg_height" :url="play_full?coverImgUrl:''" /> -->
+        <div class="play-bg-blur" :style="{backgroundImage:'url('+coverImgUrl+')'}"></div>
+        <div class="play-bg-wrap">
+          <div class="play-page-hide-btn" @touchend.prevent.stop="playFullCtrl" @click="playFullCtrl">
+            <img src="../assets/icon-arrows.png" alt="">
+          </div>
+          
+          <div class="play-header">
+            <p class="curr-song-cover">
+              <img :src="coverImgUrl" />
+            </p>
+            <p class="song-name">{{song.title}}{{song.subtitle}}</p>
+            <p class="song-singer">{{song.singer | singerName}}{{song.album.title | subTitle}}</p>
+          </div>
+          <div class="play-body">
+              <lyric/>
+          </div>
+          <div class="play-footer">
+              <process-bar  />
+            <div class="play-ctrl">
+              <img @click="changePlayMode" class="play-mode play-icon" :src="iconPlayMode"/>
+              <div class="play-inner-ctrl" >
+                <img @click="playPrev" class="play-prev play-icon" :src="iconPrev"/>
+                <img @click="playCtrl" class="play-icon play-icon" :src="playing?iconPause:iconPlay"/>
+                <img @click="playNext" class="play-next play-icon" :src="iconNext"/>
+              </div>
+              <img class="play-list play-icon" :src="iconPlaylist"/>
             </div>
-          </flexbox-item>
-          <flexbox-item>
-            <div class="music-info"></div>
-            <div class="lyric"></div>
-            <div class="music-ctrl"></div>
-          </flexbox-item>
-        </flexbox>
+          </div>
+        </div>
       </div>
     </transition>
+    <!-- play-bar -->
     <div v-show="!play_full" class="play-bar">
-			<audio 
-               :src="song.dataUrl"
-               @timeupdate="updateTime($event)"
-               @ended="playContinue($event)"
-               autoplay></audio>
-      <div @touchend.prevent.stop="playFullCtrl"
-			 @click="playFullCtrl" class="play-bar-cover-container">
-        <img class="play-bar-cover" :src="curr_cover" />
+      <audio :src="dataUrl" ref="audio" @play="play"
+        @timeupdate="updateTime" @ended="playAutoEnd" autoplay></audio>
+      <div @touchend.prevent.stop="playFullCtrl" @click="playFullCtrl" class="play-bar-cover-container">
+        <img class="play-bar-cover" :src="coverImgUrl" />
       </div>
-      <div @touchend.prevent.stop="playFullCtrl"
-			 @click="playFullCtrl" class="play-bar-text">
+      <div @touchend.prevent.stop="playFullCtrl" @click="playFullCtrl" class="play-bar-text">
         {{song.name}}
       </div>
-      <img class="play-bar-button" :src="playing?iconPause:iconPlay"
-			 @touchend="playCtrl" @click="playCtrl">
+      <img class="play-bar-button" :src="playing?iconPause:iconPlay" @touchend.prevent.stop="playCtrl" @click="playCtrl">
     </div>
   </div>
 </template>
 
 <script>
-  import { Blur, XImg, XButton, Flexbox, FlexboxItem } from "vux";
-  import { DEFAULT_IMG } from "@/config/def";
+  import { Blur, XImg, XButton, Flexbox, FlexboxItem,Range  } from "vux";
+  import { DEFAULT_SONG,DEFAULT_IMG,PLAY_MODE_IMG,PLAY_IMG,PAUSE_IMG,PLAYLIST_IMG,NEXT_IMG,PREV_IMG } from "@/config/def";
   import { mapMutations, mapState, mapGetters } from 'vuex'
+  import ProcessBar from './ProcessBar'
+  import Lyric from './Lyric'
   export default {
     name: "play",
     data() {
       return {
         curr_cover: DEFAULT_IMG,
-        iconPlay: require('@/assets/icon-play.png'),
-        iconPause: require('@/assets/icon-pause.png')
+        iconPlay: PLAY_IMG,
+        iconPause: PAUSE_IMG,
+        iconNext: NEXT_IMG,
+        iconPrev: PREV_IMG,
+        iconPlaylist: PLAYLIST_IMG
       };
     },
-
-    components: { Blur, XImg, Flexbox, FlexboxItem },
+    created () {
+      //test song
+      // this.$store.commit('addToPlayList',DEFAULT_SONG)
+      // this.$store.commit('playIndex',0)
+    },
+    components: { Blur, XImg, Flexbox, FlexboxItem,Range, ProcessBar,Lyric },
     computed: {
+      bg_height: function () {
+        return window.innerHeight
+      },
+      iconPlayMode: function () {
+        return PLAY_MODE_IMG[this.playMode]
+      },
+      ...mapGetters([
+         'dataUrl','playProcess','duration','currentTime','coverImgUrl'
+      ]),
       ...mapState({
         playing: state => state.PlayService.playing,
+        playMode: state=>state.PlayService.playMode,
         play_full: state => state.PlayService.play_full,
-        song: state => state.PlayService.song
+        song: state => state.PlayService.song,
+        setCurrentTime: state => state.PlayService.setCurrentTime,
       })
     },
     methods: {
@@ -69,38 +98,65 @@
       },
       playCtrl() {
         this.playing ? this.$store.commit('pause') : this.$store.commit('play');
-			},
-			updateTime(e) {
-				let ele = e.currentTarget;
-        this.$store.commit('updateCurrentTime', parseInt(ele.currentTime))
-        this.$store.commit('updateDuration', parseInt(ele.duration))
+      },
+      updateTime() {
+        let ele = this.$refs.audio;
+        if(this.playing){
+          this.$store.commit('updateCurrentTime', parseInt(ele.currentTime))
+          this.$store.commit('updateDuration', parseInt(ele.duration))
+        }
+      },
+      playAutoEnd: async function(){
+        this.$store.commit('playEnd')//先停再下一首
+        this.$store.commit('playContinue')
+        await new Promise((resolve)=>setTimeout(() => {resolve() }, 500)) ;
+        this.$store.commit('playStart')
+      },
+      playNext: async function(){
+        this.$store.commit('playEnd')//先停再下一首
+        this.$store.commit('playNext')
+        await new Promise((resolve)=>setTimeout(() => {resolve() }, 500)) ;
+        this.$store.commit('playStart')
+      },
+      playPrev: async function(){
+        this.$store.commit('playEnd')//先停再下一首
+        this.$store.commit('playPrev')
+        await new Promise((resolve)=>setTimeout(() => {resolve() }, 500)) ;
+        this.$store.commit('playStart')
       },
       ...mapMutations([
-        'play', 'pause', 'playContinue'
-      ])
+        'play', 'pause','addToPlayList','playIndex','changePlayMode'])
+    },
+    watch:{
+      setCurrentTime(val){
+        let ele = this.$refs.audio;
+        ele.currentTime = val;
+      },
+      playing(val){
+        console.log("change playing")
+        val? this.$refs.audio.play() : this.$refs.audio.pause()
+      }
     }
   };
 
 </script>
-<style scoped>
+<style lang="less" scoped>
+  @import "../style/consts.less";
   .play-full {
+    .POS-ABS-FULL;
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
     background: darkslategray;
     z-index: 10;
   }
 
-  .center {
+  .curr-song-cover {
     text-align: center;
     padding-top: 20px;
     color: #fff;
     font-size: 18px;
   }
 
-  .center img {
+  .curr-song-cover img {
     width: 100px;
     height: 100px;
     border-radius: 50%;
@@ -198,10 +254,10 @@
     flex-grow: 1;
     padding-left: 10px;
     cursor: pointer;
-		width: 0;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
+    width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .play-bar-button {
@@ -209,6 +265,60 @@
     height: 20px;
     padding-right: 15px;
     cursor: pointer;
+  }
+  .play-bg-blur{
+    .POS-ABS-FULL;
+    background-repeat: no-repeat;
+    background-size:150% 150%;  
+    background-position: center;
+    // background-attachment: fixed;
+    -webkit-filter:blur(50px);
+  }
+  .play-bg-wrap {
+    .POS-ABS-FULL;
+    background-color: rgba(255,255,255, .6);
+    display: flex;
+    flex-direction: column;
+  }
+  .play-body{
+    flex-grow: 1;
+    position: relative;
+  }
+  .play-ctrl{
+    display: flex;
+  }
+  .play-inner-ctrl{
+    flex-grow: 1;
+    text-align: center;
+  }
+  .play-icon{
+    width: 26px;
+    height: 26px;
+    margin: 1rem;
+  }
+  .play-process{
+    display: flex;
+    align-items: center;
+    margin: 1rem 0;
+  }
+  .play-process-label{
+    margin: 0 1rem;
+  }
+  .play-process-bar{
+    flex-grow: 1;
+    margin: 0 !important;
+  }
+  .song-name{
+    text-align: center;
+    font-size: @FONT-SIZE-LARGE;
+    color: @FONT-COLOR-HEAVY;
+    padding: 0 1rem;
+  }
+  .song-singer{
+    text-align: center;
+    font-size: @FONT-SIZE-MINI;
+    color: @FONT-COLOR-LIGHT;
+    padding: 0 1rem;
   }
 
 </style>

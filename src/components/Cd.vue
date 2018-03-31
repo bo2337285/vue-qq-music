@@ -21,7 +21,7 @@
               </div>
             </div>
             <div>
-              <x-button :gradients="['#1D62F0', '#19D5FD']" type="primary" class="add-to-playlist">播放全部</x-button>
+              <x-button @click.native="addToPlaylist" :gradients="['#1D62F0', '#19D5FD']" type="primary" class="add-to-playlist">播放全部</x-button>
             </div>
           </div>
         </blur>
@@ -44,21 +44,9 @@
 </template>
 
 <script>
-  import {
-    Group, CellBox,
-    XButton,
-    Blur,
-    Flexbox,
-    FlexboxItem
-  } from "vux";
-  import {
-    DEFAULT_IMG
-  } from "@/config/def";
-  import {
-    mapMutations,
-    mapState,
-    mapGetters
-  } from 'vuex'
+  import { Group, CellBox, XButton, Blur, Flexbox, FlexboxItem } from "vux";
+  import { DEFAULT_IMG } from "@/config/def";
+  import { mapMutations, mapState, mapGetters } from 'vuex'
   export default {
     name: "Cd",
     data() {
@@ -79,25 +67,31 @@
           this.cd = _data.cdlist[0]
         }
       } catch (error) {
-        this.$store.commit("notify", {
-          text: "获取数据失败"
-        });
+        this.$store.commit("notify", { text: "获取数据失败" });
       }
       this.$store.commit("loadingCtrl", false);
+    },
+    computed:{
+      ...mapState({
+        playing: state => state.PlayService.playing,
+      })
     },
     methods: {
       backToHome() {
         this.$router.go(-1);
       },
+      addToPlaylist(){
+        if (!!this.cd.songlist && this.cd.songlist.length>0) {
+          this.$store.commit("concatToPlayList",this.cd.songlist)
+          this.$store.commit("notify", { text: "已加入播放列表" });
+          if (!this.playing) {
+            this.$store.commit('playIndex',0)
+          }
+        }
+      },
       ...mapMutations(['loadingCtrl'])
     },
-    components: {
-      Group, CellBox,
-      XButton,
-      Blur,
-      Flexbox,
-      FlexboxItem
-    }
+    components: { Group, CellBox, XButton, Blur, Flexbox, FlexboxItem }
   };
 
 </script>

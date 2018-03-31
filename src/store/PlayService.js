@@ -4,28 +4,34 @@ export default {
   state: {
     playing: false,
     play_full: false,
+    setCurrentTime: 0,
     currentTime: 0,
+    playProcess:0,
     duration: 0,
     playMode: def.SEQUENTIAL,
     index: 0,
     song: {
       name: def.DEFAULT_SONG_NAME,
-      dataUrl: def.DEFAULT_SONG_DATAURL
+      mid: def.DEFAULT_SONG_MID,
+      album:{}
     },
     playList: []
   },
   mutations: {
     playIndex (state, index) {
       state.index = index
-      state.song = state.playList[index]
+      state.song = Object.assign({},state.playList[index])
     },
     setPlayList (state, playList) {
       state.playList = playList.list
       state.index = playList.index
-      state.song = state.playList[state.index]
+      state.song = Object.assign(state.playList[state.index])
     },
     addToPlayList (state, item) {
       state.playList.push(item)
+    },
+    concatToPlayList (state, playList) {
+      state.playList = state.playList.concat([],playList)
     },
     deleteFromPlayList (state, index) {
       if (isNaN(index) || index >= state.playList.length) {
@@ -39,7 +45,7 @@ export default {
           }
           state.coverImgUrl = def.DEFAULT_IMG
         } else {
-          state.song = state.playList[state.index + 1]
+          state.song = Object.assign(state.playList[state.index + 1])
         }
       } else if (index < state.index) {
         state.index--
@@ -68,13 +74,13 @@ export default {
     playFullDisable (state) {
       state.play_full = false
     },
-    playFront (state) {
+    playPrev (state) {
       state.index = (state.index - 1 + state.playList.length) % state.playList.length
-      state.song = state.playList[state.index]
+      state.song = Object.assign(state.playList[state.index])
     },
     playNext (state) {
       state.index = (state.index + 1) % state.playList.length
-      state.song = state.playList[state.index]
+      state.song = Object.assign(state.playList[state.index])
     },
     playContinue (state) {
       switch (state.playMode) {
@@ -82,32 +88,56 @@ export default {
           break
         case def.SEQUENTIAL:
           state.index = (state.index + 1) % state.playList.length
-          state.song = state.playList[state.index]
+          state.song = Object.assign(state.playList[state.index])
           break
         case def.RANDOM:
           state.index = Math.floor(Math.random() * state.playList.length)
-          state.song = state.playList[state.index]
+          state.song = Object.assign(state.playList[state.index])
           break
       }
+    },
+    playStart (state){
+      state.setCurrentTime = 0
+      state.playing = true
+    },
+    playEnd (state){
+      state.setCurrentTime = state.duration
+      state.playing = false;
     },
     changePlayMode (state) {
       state.playMode = (state.playMode + 1) % 3
     },
     setAlbummid(state,albummid){
       state.song = {...state.song,albummid}
+    },
+    updateProcess (state , val){
+      state.setCurrentTime = val * state.duration
+      state.currentTime = state.setCurrentTime
+      // console.log(state.currentTime)
     }
   },
   getters: {
-    currentTime: state =>
-    parseInt(state.currentTime / 60) + ':' + (Array(2).join(0) + (state.currentTime % 60)).slice(-2)
-    ,
-    duration: state =>
-    parseInt(state.duration / 60) + ':' + (Array(2).join(0) + (state.duration % 60)).slice(-2),
+    currentTime: state =>{
+      return parseInt(state.currentTime / 60) + ':' + (Array(2).join(0) + (state.currentTime % 60)).slice(-2)
+    },
+    duration: state =>{
+      return parseInt(state.duration / 60) + ':' + (Array(2).join(0) + (state.duration % 60)).slice(-2)
+    },
+    playProcess: state =>{
+      return state.currentTime /state.duration;
+    },
+    dataUrl: state =>{
+      if(!!state.song.mid && !!state.song.mid.trim().length){
+        return 'https://dl.stream.qqmusic.qq.com/C100' + state.song.mid + '.m4a?fromtag=46'
+      }else{
+        return ""
+      }
+    },
     coverImgUrl:state => {
-      if(typeof state.song.albummid === 'undefined')
-        return def.DEFAULT_IMG
+      if(!!state.song.album && !!state.song.album.mid )
+        return "https://y.gtimg.cn/music/photo_new/T002R500x500M000"+state.song.album.mid+".jpg"
       else
-        return "https://y.gtimg.cn/music/photo_new/T002R500x500M000"+state.song.albummid+".jpg"
+        return def.DEFAULT_IMG
     }
   }
 }

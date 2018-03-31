@@ -1,8 +1,8 @@
 export default {
     subTitle: text => {
-        return text.trim().length>0 ? " - " + text: text;
+        return !!text && text.trim().length>0 ? " - " + text: text;
       },
     singerName: singerList => {
-        return singerList.length>0 ? singerList[0].name : "佚名";
+        return !!singerList && singerList.length>0 ? singerList[0].name : "佚名";
       }
 }

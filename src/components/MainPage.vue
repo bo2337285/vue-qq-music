@@ -84,25 +84,13 @@ export default {
     }
   },
   created () {
-    // this.$refs.push(this.tabs_selected)
-    // console.log(this.$route.name);
     if (this.tabs.length > 0) {
       let _name = this.$route.name;
       let _array = this.tabs.filter(item => item.name == _name);
       this.tabs_selected = _array.length > 0 ? _name : this.tabs[0].name;
     }
   },
-  components: {
-    Group,
-    CellBox,
-    Search,
-    Tab,
-    TabItem,
-    XButton,
-    Flexbox,
-    FlexboxItem,
-    Box
-  }
+  components: { Group, CellBox, Search, Tab, TabItem, XButton, Flexbox, FlexboxItem, Box }
 };
 
 function getSearchResult(val) {

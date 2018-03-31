@@ -86,40 +86,42 @@ export default {
 };
 </script>
 
-<style scoped>
-.card-header {
-  position: relative;
-}
-.card-content {
-  padding: 0 7px 5px;
-}
-.card-img {
-  width: 100%;
-}
-.card-title,
-.card-author {
-  max-width: 10rem; /* 不设定宽度的话，会把父页面的弹性布局撑开 */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-weight: normal;
-  font-size: 14px;
-  padding: 0;
-  margin: 0;
-}
-.card-author {
-  font-size: 12px;
-}
+<style lang="less" scoped>
+  @import "../style/consts.less";
+  .card-header {
+    position: relative;
+  }
+  .card-content {
+    padding: 0 7px 5px;
+  }
+  .card-img {
+    width: 100%;
+  }
+  .card-title,
+  .card-author {
+    max-width: 10rem; /* 不设定宽度的话，会把父页面的弹性布局撑开 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: normal;
+    font-size: @FONT-SIZE-NORMAL;
+    padding: 0;
+    margin: 0;
+  }
+  .card-author {
+    font-size: @FONT-SIZE-MINI;
+    color: @FONT-COLOR-LIGHT;
+  }
 
-.hots-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: repeat(3, 1fr);
-  grid-gap: 8px;
-  /* grid-template-columns: auto 8px auto; */
-}
+  .hots-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(3, 1fr);
+    grid-gap: 8px;
+    /* grid-template-columns: auto 8px auto; */
+  }
 
-.group-title {
-  margin: 8px 0 8px;
-}
+  .group-title {
+    margin: 8px 0 8px;
+  }
 </style>
